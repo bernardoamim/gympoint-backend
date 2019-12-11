@@ -1,2 +1,2 @@
-# gympoint
-Gympoint App as a final challenge of Rocketseat's bootcamp.
+# gympoint-backend
+Backend of Gympoint's App as a final challenge of Rocketseat's bootcamp.
