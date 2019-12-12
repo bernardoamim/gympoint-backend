@@ -4,6 +4,8 @@ import {
   startOfToday,
   addMonths,
   endOfDay,
+  isAfter,
+  startOfDay,
 } from 'date-fns';
 import { Op } from 'sequelize';
 import * as Yup from 'yup';
@@ -12,6 +14,8 @@ import Student from '../models/Student';
 import Inscription from '../models/Inscription';
 
 class InscriptionController {
+  // =================================  INDEX  ================================= //
+
   async index(req, res) {
     const { page = 1 } = req.query;
 
@@ -46,13 +50,9 @@ class InscriptionController {
     return res.json(inscriptions);
   }
 
+  // =================================  SHOW  ================================= //
+
   async show(req, res) {
-    /**
-     *  Only lists inscriptions that are active or set to future
-     *  isActive: true -> ongoing;
-     *  isActive: false -> future inscription
-     *  not shown -> ended inscription
-     * */
     const inscription = await Inscription.findByPk(req.params.id, {
       include: [
         {
@@ -70,6 +70,8 @@ class InscriptionController {
     });
     return res.json(inscription);
   }
+
+  // =================================  STORE  ================================= //
 
   async store(req, res) {
     const schema = Yup.object().shape({
@@ -89,9 +91,9 @@ class InscriptionController {
      * Here we validated by the day. Made more sense. Rsrs
      */
     const parsedStartDate = parseISO(start_date);
-    const endOfStartDay = endOfDay(parsedStartDate);
+    const startDay = startOfDay(parsedStartDate);
 
-    if (isBefore(endOfStartDay, startOfToday())) {
+    if (isBefore(startDay, startOfToday())) {
       return res
         .status(400)
         .json({ error: 'You cannot create an inscription with past date.' });
@@ -116,7 +118,7 @@ class InscriptionController {
       where: {
         student_id,
         end_date: {
-          [Op.gte]: endOfStartDay,
+          [Op.gte]: endOfDay(parsedStartDate),
         },
       },
     });
@@ -127,18 +129,108 @@ class InscriptionController {
         .json({ error: 'User already has an ongoing/set inscription.' });
     }
 
-    const end_date = addMonths(endOfStartDay, plan.duration);
+    const end_date = addMonths(endOfDay(parsedStartDate), plan.duration);
     const totalPrice = plan.price * plan.duration;
 
     const inscription = await Inscription.create({
       student_id,
       plan_id,
-      start_date: endOfStartDay,
+      start_date: startDay,
       end_date,
       price: totalPrice,
     });
 
     return res.json(inscription);
+  }
+
+  // =================================  UPDATE  ================================= //
+
+  /**
+   *  The user will be able to edit the inscription if
+   *  it is active or is set to start in the future
+   */
+
+  async update(req, res) {
+    const schema = Yup.object().shape({
+      plan_id: Yup.number().required(),
+      start_date: Yup.date(),
+    });
+
+    if (!(await schema.isValid(req.body))) {
+      return res.status(400).json({ error: 'Validation fails.' });
+    }
+
+    const { plan_id, start_date = startOfToday() } = req.body;
+
+    // Verifying if inscription exists
+    const inscription = await Inscription.findByPk(req.params.id);
+
+    if (!inscription) {
+      return res
+        .status(400)
+        .json({ error: "Couldn't find the searched inscription." });
+    }
+
+    // Checking if student has been deleted
+    if (!inscription.student_id) {
+      return res
+        .status(400)
+        .json({ error: "Couldn't find inscription's student." });
+    }
+
+    // Checking if plan is valid
+    const plan = await Plan.findByPk(plan_id);
+
+    if (!plan) {
+      return res.status(400).json({ error: "Couldn't find informed plan." });
+    }
+
+    // Checking if incription has ended (notShown)
+    if (isAfter(startOfToday(), inscription.end_date)) {
+      return res
+        .status(400)
+        .json({ error: "You can't update ended inscriptions." });
+    }
+
+    // Checking if informed start_date is in the past
+    const parsedStartDate = parseISO(start_date);
+    const startDay = startOfDay(parsedStartDate);
+
+    if (isBefore(startDay, startOfToday())) {
+      return res.status(400).json({
+        error: 'Start date of the inscription cannot be past date.',
+      });
+    }
+
+    const end_date = addMonths(endOfDay(parsedStartDate), plan.duration);
+    const totalPrice = plan.price * plan.duration;
+
+    const updatedInscription = await inscription.update({
+      plan_id,
+      start_date: startDay,
+      end_date,
+      price: totalPrice,
+    });
+
+    return res.json(updatedInscription);
+  }
+
+  // =================================  UPDATE  ================================= //
+
+  async delete(req, res) {
+    const inscription = await Inscription.findByPk(req.params.id);
+
+    if (!inscription) {
+      return res.status(400).json({ error: 'Inscription does not exist.' });
+    }
+
+    await inscription.destroy({
+      options: {
+        paranoid: true,
+      },
+    });
+
+    return res.json({ message: 'Inscription succesfully deleted!' });
   }
 }
 

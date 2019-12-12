@@ -29,9 +29,11 @@ routes.post('/plans', PlanController.store);
 routes.put('/plans/:id', PlanController.update);
 routes.delete('/plans/:id', PlanController.delete);
 
-// authenticated plan's routes
+// authenticated inscription's routes
 routes.get('/inscriptions', InscriptionController.index);
 routes.get('/inscriptions/:id', InscriptionController.show);
 routes.post('/inscriptions', InscriptionController.store);
+routes.put('/inscriptions/:id', InscriptionController.update);
+routes.delete('/inscriptions/:id', InscriptionController.delete);
 
 export default routes;
