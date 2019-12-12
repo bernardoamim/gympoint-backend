@@ -6,12 +6,15 @@ import {
   endOfDay,
   isAfter,
   startOfDay,
+  format,
 } from 'date-fns';
+import en from 'date-fns/locale/en-US';
 import { Op } from 'sequelize';
 import * as Yup from 'yup';
 import Plan from '../models/Plan';
 import Student from '../models/Student';
 import Inscription from '../models/Inscription';
+import Mail from '../../lib/Mail';
 
 class InscriptionController {
   // =================================  INDEX  ================================= //
@@ -50,6 +53,8 @@ class InscriptionController {
     return res.json(inscriptions);
   }
 
+  // =================================  INDEX  ================================= //
+
   // =================================  SHOW  ================================= //
 
   async show(req, res) {
@@ -70,6 +75,8 @@ class InscriptionController {
     });
     return res.json(inscription);
   }
+
+  // =================================  SHOW  ================================= //
 
   // =================================  STORE  ================================= //
 
@@ -94,9 +101,9 @@ class InscriptionController {
     const startDay = startOfDay(parsedStartDate);
 
     if (isBefore(startDay, startOfToday())) {
-      return res
-        .status(400)
-        .json({ error: 'You cannot create an inscription with past date.' });
+      return res.status(400).json({
+        error: 'You cannot create an inscription with past start date.',
+      });
     }
 
     // Checking if student_id is valid
@@ -140,8 +147,23 @@ class InscriptionController {
       price: totalPrice,
     });
 
+    await Mail.sendMail({
+      to: `${student.name} <${student.email}>`,
+      subject: 'GymPoint Inscription',
+      template: 'welcome',
+      context: {
+        student: student.name,
+        plan: plan.title,
+        fee: plan.price.toFixed(2),
+        amount: totalPrice.toFixed(2),
+        endDate: format(end_date, "EEEE', ' MMMM' 'dd', 'yyyy", { locale: en }),
+      },
+    });
+
     return res.json(inscription);
   }
+
+  // =================================  STORE  ================================= //
 
   // =================================  UPDATE  ================================= //
 
@@ -168,7 +190,7 @@ class InscriptionController {
     if (!inscription) {
       return res
         .status(400)
-        .json({ error: "Couldn't find the searched inscription." });
+        .json({ error: "Couldn't find informed inscription." });
     }
 
     // Checking if student has been deleted
@@ -217,6 +239,8 @@ class InscriptionController {
 
   // =================================  UPDATE  ================================= //
 
+  // =================================  DELETE  ================================= //
+
   async delete(req, res) {
     const inscription = await Inscription.findByPk(req.params.id);
 
@@ -224,14 +248,12 @@ class InscriptionController {
       return res.status(400).json({ error: 'Inscription does not exist.' });
     }
 
-    await inscription.destroy({
-      options: {
-        paranoid: true,
-      },
-    });
+    await inscription.destroy();
 
     return res.json({ message: 'Inscription succesfully deleted!' });
   }
 }
+
+// =================================  DELETE  ================================= //
 
 export default new InscriptionController();
