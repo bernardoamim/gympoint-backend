@@ -6,15 +6,14 @@ import {
   endOfDay,
   isAfter,
   startOfDay,
-  format,
 } from 'date-fns';
-import en from 'date-fns/locale/en-US';
 import { Op } from 'sequelize';
 import * as Yup from 'yup';
 import Plan from '../models/Plan';
 import Student from '../models/Student';
 import Inscription from '../models/Inscription';
-import Mail from '../../lib/Mail';
+import WelcomeMail from '../jobs/WelcomeMail';
+import Queue from '../../lib/Queue';
 
 class InscriptionController {
   // =================================  INDEX  ================================= //
@@ -147,18 +146,7 @@ class InscriptionController {
       price: totalPrice,
     });
 
-    await Mail.sendMail({
-      to: `${student.name} <${student.email}>`,
-      subject: 'GymPoint Inscription',
-      template: 'welcome',
-      context: {
-        student: student.name,
-        plan: plan.title,
-        fee: plan.price.toFixed(2),
-        amount: totalPrice.toFixed(2),
-        endDate: format(end_date, "EEEE', ' MMMM' 'dd', 'yyyy", { locale: en }),
-      },
-    });
+    await Queue.add(WelcomeMail.key, { inscription, plan, student });
 
     return res.json(inscription);
   }

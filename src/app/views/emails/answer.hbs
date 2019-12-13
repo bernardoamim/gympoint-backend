@@ -1,0 +1,22 @@
+<h2>Hi, {{helpOrder.student.name}}</h2>
+<h4>Thank you for making contact with us! My name is {{userName}} from GymPoint!</h4>
+<strong>I'm here to help you in the best way I can!</strong>
+<p>Here's the help order you opened:</p>
+<p>
+  <strong>Student ID: </strong> {{helpOrder.student.id}} <br>
+  <strong>Student name: </strong> {{helpOrder.student.name}} <br>
+  <strong>Student email: </strong> <span style="color: rgb(18, 124, 185)"><u>{{helpOrder.student.email}}</u></span> <br>
+  <strong>Order created at: </strong> {{created_at}} <br>
+  <strong>Question: </strong><br>
+  <i> "{{helpOrder.question}}"</i>
+</p>
+<p>
+  <strong>Instructor name: </strong> {{userName}} <br>
+  <strong>Answered at: </strong> {{answered_at}} <br>
+  <strong>Answer: </strong> <br>
+  <i>"{{helpOrder.answer}}"</i>
+</p>
+
+<p>
+  If you still have any questions, please contact us!
+</p>

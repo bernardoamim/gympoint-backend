@@ -4,8 +4,10 @@ import User from '../app/models/User';
 import Student from '../app/models/Student';
 import Plan from '../app/models/Plan';
 import Inscription from '../app/models/Inscription';
+import Checkin from '../app/models/Checkin';
+import HelpOrder from '../app/models/HelpOrder';
 
-const models = [User, Student, Plan, Inscription];
+const models = [User, Student, Plan, Inscription, Checkin, HelpOrder];
 
 class Database {
   constructor() {
