@@ -16,7 +16,7 @@ import WelcomeMail from '../jobs/WelcomeMail';
 import Queue from '../../lib/Queue';
 
 class InscriptionController {
-  // =================================  INDEX  ================================= //
+  // =================================  <INDEX>  ================================= //
 
   async index(req, res) {
     const { page = 1 } = req.query;
@@ -52,9 +52,9 @@ class InscriptionController {
     return res.json(inscriptions);
   }
 
-  // =================================  INDEX  ================================= //
+  // ================================  </INDEX>  ================================= //
 
-  // =================================  SHOW  ================================= //
+  // =================================  <SHOW>  ================================= //
 
   async show(req, res) {
     const inscription = await Inscription.findByPk(req.params.id, {
@@ -75,9 +75,9 @@ class InscriptionController {
     return res.json(inscription);
   }
 
-  // =================================  SHOW  ================================= //
+  // =================================  </SHOW>  ================================= //
 
-  // =================================  STORE  ================================= //
+  // =================================  <STORE>  ================================= //
 
   async store(req, res) {
     const schema = Yup.object().shape({
@@ -151,9 +151,9 @@ class InscriptionController {
     return res.json(inscription);
   }
 
-  // =================================  STORE  ================================= //
+  // =================================  </STORE>  ================================= //
 
-  // =================================  UPDATE  ================================= //
+  // =================================  <UPDATE>  ================================= //
 
   /**
    *  The user will be able to edit the inscription if
@@ -225,9 +225,9 @@ class InscriptionController {
     return res.json(updatedInscription);
   }
 
-  // =================================  UPDATE  ================================= //
+  // =================================  </UPDATE>  ================================= //
 
-  // =================================  DELETE  ================================= //
+  // =================================  <DELETE>  ================================= //
 
   async delete(req, res) {
     const inscription = await Inscription.findByPk(req.params.id);
@@ -242,6 +242,6 @@ class InscriptionController {
   }
 }
 
-// =================================  DELETE  ================================= //
+// =================================  </DELETE>  ================================= //
 
 export default new InscriptionController();
