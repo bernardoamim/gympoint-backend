@@ -2,6 +2,7 @@ import { Router } from 'express';
 
 import UserController from './app/controllers/UserController';
 import SessionController from './app/controllers/SessionController';
+import StudentSessionController from './app/controllers/StudentSessionController';
 import StudentController from './app/controllers/StudentController';
 import PlanController from './app/controllers/PlanController';
 import InscriptionController from './app/controllers/InscriptionController';
@@ -22,6 +23,7 @@ routes.post('/users', UserController.store);
 
 // Unauthenticated sessions's routes
 routes.post('/sessions', SessionController.store);
+routes.post('/students/sessions', StudentSessionController.store);
 
 // Unauthenticated student's checkins routes
 routes.get('/students/:id/checkins', CheckinController.index);
