@@ -17,7 +17,9 @@ class PlanController {
   async show(req, res) {
     const { id } = req.params;
 
-    const plan = await Plan.findByPk(id);
+    const plan = await Plan.findByPk(id, {
+      attributes: ['id', 'title', 'duration', 'price'],
+    });
 
     if (!plan)
       return res

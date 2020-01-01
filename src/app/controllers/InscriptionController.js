@@ -42,7 +42,7 @@ class InscriptionController {
         {
           model: Plan,
           as: 'plan',
-          attributes: ['title', 'duration', 'price'],
+          attributes: ['id', 'title', 'duration', 'price'],
         },
       ],
       attributes: ['id', 'isActive', 'start_date', 'end_date', 'price'],
@@ -67,7 +67,7 @@ class InscriptionController {
         {
           model: Plan,
           as: 'plan',
-          attributes: ['title', 'duration', 'price'],
+          attributes: ['id', 'title', 'duration', 'price'],
         },
       ],
       attributes: ['id', 'isActive', 'start_date', 'end_date', 'price'],
@@ -163,7 +163,7 @@ class InscriptionController {
   async update(req, res) {
     const schema = Yup.object().shape({
       plan_id: Yup.number().required(),
-      start_date: Yup.date(),
+      start_date: Yup.date().required(),
     });
 
     if (!(await schema.isValid(req.body))) {

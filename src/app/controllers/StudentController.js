@@ -9,7 +9,7 @@ class StudentController {
     const whereStatement = {};
 
     if (q !== '') {
-      whereStatement.name = { [Op.like]: `%${q}%` };
+      whereStatement.name = { [Op.iLike]: `%${q}%` };
     }
 
     const students = await Student.findAll({
@@ -18,6 +18,12 @@ class StudentController {
       limit: 20,
       offset: (page - 1) * 20,
     });
+
+    // const response = {
+    //   ...students,
+    //   total: students.length,
+    //   totalPages: students.lenght / 20,
+    // };
 
     return res.json(students);
   }
