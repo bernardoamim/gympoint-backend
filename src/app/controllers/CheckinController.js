@@ -27,15 +27,15 @@ class CheckinController {
           attributes: ['id', 'name', 'email'],
         },
       ],
-      limit: 20,
-      offset: (page - 1) * 20,
+      limit: 10,
+      offset: (page - 1) * 10,
       order: [['created_at', 'DESC']],
     });
 
     return res.json({
       total: count,
       page,
-      perPage: 20,
+      perPage: 10,
       checkins: rows,
     });
   }

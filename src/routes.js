@@ -29,9 +29,6 @@ routes.post('/students/sessions', StudentSessionController.store);
 routes.get('/students/:id/checkins', CheckinController.index);
 routes.post('/students/:id/checkins', CheckinController.store);
 
-// Unauthenticated student's help orders routes
-routes.post('/students/:id/help-orders', HelpOrderController.store);
-
 /**
  *    =========================  AUTHENTICATED ROUTES  ========================= //
  */
@@ -64,6 +61,7 @@ routes.delete('/inscriptions/:id', InscriptionController.delete);
 // Authenticated help order's routes
 routes.get('/help-orders', HelpOrderController.index);
 routes.get('/students/:id/help-orders', HelpOrderController.show);
+routes.post('/students/:id/help-orders', HelpOrderController.store);
 
 // Authenticated answer routes
 routes.post('/help-orders/:id/answer', AnswerController.store);

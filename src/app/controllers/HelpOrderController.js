@@ -49,12 +49,15 @@ class HelpOrderController {
   }
 
   async show(req, res) {
+    const { page = 1 } = req.query;
+
     // Checking if student's id is a valid one
     const student = await Student.findByPk(req.params.id);
 
     if (!student) {
       return res.status(400).json({ error: 'Student not found.' });
     }
+
     const orders = await HelpOrder.findAll({
       where: {
         student_id: req.params.id,
@@ -66,6 +69,8 @@ class HelpOrderController {
           attributes: ['id', 'name', 'email'],
         },
       ],
+      order: [['createdAt', 'DESC']],
+      offset: (page - 1) * 10,
     });
     return res.json(orders);
   }
