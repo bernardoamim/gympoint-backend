@@ -43,6 +43,7 @@ routes.get('/students', StudentController.index);
 routes.get('/students/:id', StudentController.show);
 routes.post('/students', StudentController.store);
 routes.put('/students/:id', StudentController.update);
+routes.delete('/students/:id', StudentController.delete);
 
 // Authenticated plan's routes
 routes.get('/plans', PlanController.index);
