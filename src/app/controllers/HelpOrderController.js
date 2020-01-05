@@ -6,7 +6,7 @@ class HelpOrderController {
   async index(req, res) {
     const { page = 1 } = req.query;
 
-    const helpOrders = await HelpOrder.findAll({
+    const { count, rows } = await HelpOrder.findAndCountAll({
       where: {
         answered_at: null,
       },
@@ -21,7 +21,12 @@ class HelpOrderController {
       ],
     });
 
-    return res.json(helpOrders);
+    return res.json({
+      total: count,
+      page,
+      perPage: 20,
+      helpOrders: rows,
+    });
   }
 
   async store(req, res) {
@@ -58,7 +63,7 @@ class HelpOrderController {
       return res.status(400).json({ error: 'Student not found.' });
     }
 
-    const orders = await HelpOrder.findAll({
+    const { count, rows } = await HelpOrder.findAndCountAll({
       where: {
         student_id: req.params.id,
       },
@@ -70,9 +75,16 @@ class HelpOrderController {
         },
       ],
       order: [['createdAt', 'DESC']],
+      limit: 10,
       offset: (page - 1) * 10,
     });
-    return res.json(orders);
+
+    return res.json({
+      total: count,
+      page,
+      perPage: 10,
+      helpOrders: rows,
+    });
   }
 }
 

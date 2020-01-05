@@ -195,7 +195,7 @@ class InscriptionController {
       return res.status(400).json({ error: "Couldn't find informed plan." });
     }
 
-    // Checking if incription has ended (notShown)
+    // Checking if inscription has ended (notShown)
     if (isAfter(startOfToday(), inscription.end_date)) {
       return res
         .status(400)
